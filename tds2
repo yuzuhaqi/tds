@@ -1,1 +1,84 @@
--- bro
+local id = 0
+
+local TDS = {
+	towers = {},
+	staterep = nil
+}
+
+function TDS:isGame()
+	if game.PlaceId == 5591597781 then
+		return true
+	else
+		return false
+	end
+end
+function TDS:GetStateRep()
+	if TDS.staterep then return TDS.staterep end
+	
+	repeat
+		for j, k in pairs(game:GetService("ReplicatedStorage").StateReplicators:GetChildren()) do
+			if k:GetAttribute("TimeScale") then
+				TDS.staterep = k
+			end
+		end
+	until TDS.staterep
+	
+	return TDS.staterep
+end
+
+function TDS:Place(Name, PositionX, PositionY, PositionZ, ...)
+	repeat
+		task.wait()
+	until game.Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[Name].Stats).Price
+	
+	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0, 0, 0)), ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
+	if tower then
+		id += 1
+		tower:SetAttribute("customupgrade", 0)
+		TDS.towers[id] = tower
+		
+		print(string.format("Placed tower '%s' with an ID of %s", Name, id))
+	else
+		warn(string.format("Unable to place tower '%s' which was supposed to have an ID of %s", Name, id))
+	end
+end
+function TDS:Upgrade(id, ...)
+	local tower = TDS.towers[id]
+	if tower then
+		repeat
+			task.wait()
+		until game.Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[tower.Name].Stats).Upgrades[tower:GetAttribute("customupgrade") + 1].Cost
+		
+		local towerName = tower.Name
+		tower:SetAttribute("customupgrade", tower:GetAttribute("customupgrade") + 1)
+		game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Upgrade", "Set", {Troop = tower})
+		print(string.format("Upgraded tower '%s' with an ID of %s", towerName, id))
+	else
+		warn(string.format("'%s' has not been placed! Unable to upgrade.", id))
+	end
+end
+function TDS:Skip(...)
+	game.ReplicatedStorage.RemoteEvent:FireServer("Waves","Skip")
+end
+function TDS:Target(...)
+	local tower = TDS.towers[id]
+	if tower then
+		local towerName = tower.Name
+		game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Target", "Set", {Troop = tower})
+		print(string.format("Targeted tower '%s' with an ID of %s", towerName, id))
+	else
+		warn(string.format("'%s' has not been placed! Unable to target.", id))
+	end
+end
+function TDS:Sell(id)
+	local tower = TDS.towers[id]
+	if tower then
+		local towerName = tower.Name
+		game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Sell", {Troop = tower})
+		print(string.format("Sold tower '%s' with an ID of %s", towerName, id))
+	else
+		warn(string.format("'%s' has not been placed! Unable to sell.", id))
+	end
+end
+
+return TDS
