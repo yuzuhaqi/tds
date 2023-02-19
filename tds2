@@ -14,7 +14,7 @@ local function getCash()
 	for _, replicator in pairs(game:GetService("ReplicatedStorage").StateReplicators:GetChildren()) do
 		if replicator:GetAttribute("UserId") == game.Players.LocalPlayer.UserId then
 			TDS.replicatorFolder = replicator
-			TDS.replicatorFolder:GetAttribute("Cash")
+			return TDS.replicatorFolder:GetAttribute("Cash")
 		end
 	end
 end
@@ -81,9 +81,7 @@ end
 function TDS:Place(Name, PositionX, PositionY, PositionZ, ...)
 	repeat
 		task.wait()
-		print("not enouyh money L")
 	until getCash() >= require(game.ReplicatedStorage.Assets.Troops[Name].Stats).Price
-	print("yes its trying to place")
 	
 	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0, 0, 0)), ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
 	if tower then
