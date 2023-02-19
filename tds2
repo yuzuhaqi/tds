@@ -2,8 +2,22 @@ local ids = 0
 
 local TDS = {
 	towers = {},
-	staterep = nil
+	staterep = nil,
+	replicatorFolder = nil
 }
+
+local function getCash()
+	if TDS.replicatorFolder then
+		return TDS.replicatorFolder:GetAttribute("Cash")
+	end
+	
+	for _, replicator in pairs(game:GetService("ReplicatedStorage").StateReplicators:GetChildren()) do
+		if replicator:GetAttribute("UserId") == game.Players.LocalPlayer.UserId then
+			TDS.replicatorFolder = replicator
+			TDS.replicatorFolder:GetAttribute("Cash")
+		end
+	end
+end
 
 function TDS:isGame()
 	if game.PlaceId == 5591597781 then
@@ -67,7 +81,9 @@ end
 function TDS:Place(Name, PositionX, PositionY, PositionZ, ...)
 	repeat
 		task.wait()
-	until game.Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[Name].Stats).Price
+		print("not enouyh money L")
+	until getCash() >= require(game.ReplicatedStorage.Assets.Troops[Name].Stats).Price
+	print("yes its trying to place")
 	
 	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0, 0, 0)), ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
 	if tower then
@@ -85,7 +101,7 @@ function TDS:Upgrade(id, ...)
 	if tower then
 		repeat
 			task.wait()
-		until game.Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[tower.Name].Stats).Upgrades[tower:GetAttribute("customupgrade") + 1].Cost
+		until getCash() >= require(game.ReplicatedStorage.Assets.Troops[tower.Name].Stats).Upgrades[tower:GetAttribute("customupgrade") + 1].Cost
 		
 		local towerName = tower.Name
 		tower:SetAttribute("customupgrade", tower:GetAttribute("customupgrade") + 1)
