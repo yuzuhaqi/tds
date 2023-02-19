@@ -78,10 +78,15 @@ function TDS:AutoChain(id1, id2, id3)
 	end)
 end
 
-function TDS:Place(Name, PositionX, PositionY, PositionZ, ...)
+function TDS:Place(Name, PositionX, PositionY, PositionZ, wv1, wv2, wv3, customrotation, rotationa, rotationb, rotationc, ...)
 	repeat
 		task.wait()
 	until getCash() >= require(game.ReplicatedStorage.Assets.Troops[Name].Stats).Price * game:GetService("ReplicatedStorage"):WaitForChild("State"):WaitForChild("PriceScale").Value
+	
+	local rotation = CFrame.new(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+	if customrotation then
+		rotation = CFrame.new(rotationa, rotationb, rotationc)
+	end
 	
 	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0, 0, 0)), ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
 	if tower and typeof(tower) == "Instance" then
