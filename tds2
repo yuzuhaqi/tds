@@ -88,7 +88,7 @@ function TDS:Place(Name, PositionX, PositionY, PositionZ, wv1, wv2, wv3, customr
 		rotation = CFrame.new(rotationa, rotationb, rotationc)
 	end
 	
-	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0, 0, 0)), ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
+	local tower = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("Troops", "Place", Name, {["Rotation"] = rotation, ["Position"] = Vector3.new(PositionX, PositionY, PositionZ)})
 	if tower and typeof(tower) == "Instance" then
 		ids += 1
 		tower:SetAttribute("Name", Name)
