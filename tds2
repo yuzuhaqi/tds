@@ -1384,7 +1384,7 @@ if game.PlaceId == 3260590327 and not getgenv().ExecutedAlr or game.PlaceId == 5
 
                     repeat
                         task.wait()
-                    until Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[al].Stats).Price
+                    until game.Players.LocalPlayer.Cash.Value >= require(game.ReplicatedStorage.Assets.Troops[al].Stats).Price
 
                     repeat
                         if aW then
