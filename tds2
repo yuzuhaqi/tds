@@ -97,7 +97,7 @@ function TDS:Place(Name, PositionX, PositionY, PositionZ, wv1, wv2, wv3, customr
 		
 		print(string.format("Placed tower '%s' with an ID of %s", Name, ids))
 	else
-		warn(string.format("Unable to place tower '%s' which was supposed to have an ID of %s", Name, ids + 1))
+		game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(string.format("Unable to place tower '%s' which was supposed to have an ID of %s", Name, ids + 1),"All")
 	end
 end
 function TDS:Upgrade(id, ...)
